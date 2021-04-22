@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Today's Cocktail</title>
+        <head profile="http://www.w3.org/2005/10/profile"></head>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous">
+        </script>
+        <script>
+
+        $(document).ready(function () {
+            $("#random").click(function () {
+
+                var settings = {
+                    url : "www.thecocktaildb.com/api/json/v1/1/random.php",
+                    method : "GET",
+                    timeout : 0
+                };
+
+                $.ajax(settings).done(function (response) {
+                    console.log(response);
+
+                    var name = response.drinks.strDrink;
+
+                    console.log(name);
+
+                    var ingredients = [];
+                    
+                    for(var i = 0; i<15; i++){
+                        ingredient = response.drinks.strIngredient;
+                        if(ingredient == null)
+                            break;
+                        ingredients[i] = ingredient;
+                        console.log(ingredients[i]);
+                    }
+
+                    var measures = [];
+
+                    for(var i = 0; i<15; i++){
+                        measure = response.drinks.strMeasure;
+                        if(measure == null)
+                            break;
+                        measures[i] = measure;
+                        console.log(measures[i]);
+                    }
+
+                    var htmlStr;
+                    
+                    try {
+
+                        var imgurl = response.drinks.strDrinkThumb;
+                        console.log(imgurl);
+
+                        //이미지 url이 성공적으로 받아진 경우 테이블의 img란에 이미지를 출력한다.
+                        $("#div").html("");
+                        //이미지 소스는 받아왔지만 404나 403에러가 뜰 경우 준비한 사진을 출력한다.
+                        htmlStr = "<img class='imgbox' width = 600px height = 400px src=" + imgurl + ">";
+                        $("#div").html(htmlStr);
+                    }
+
+                    //try 구문 내에서 오류가 발생하면 아래 코드를 실행한다.
+                    catch {
+                        $("#div").html("");
+                        htmlStr = "이미지를 찾을 수 없습니다";
+                        console.log(htmlStr);
+                        $("#div").html(htmlStr);
+                    }
+
+                    tbl.innerHTML += "<tr>"
+                        + "<td>" + name + "</td>"
+                        + "<td>" + ingredients + "</td>"
+                        + "<td>" + measures + "</td>"
+                        + "<td>" + "<div class = 'box' id = 'div'>" + "</div>" + "</td>"
+                        + "</tr>";
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <form id= "myform" name="myform">
+            <h1>Today's Cocktail</h1>
+            <div class="box1">
+                <div id = "btn_group">
+                    <input type='button' class='btn' id='random' value='랜덤'>
+                </div>
+            </div>
+        </form>
+
+        <table style="width:100%" id="tbl0">
+            <thead>
+                <th>Name</th>
+                <th>Ingredient</th>
+                <th>Measure</th>
+                <th>Img</th>
+            </thead>
+        </table>
+    </body>
+</html>

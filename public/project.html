@@ -1,0 +1,116 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>Today's Cocktail</title>
+
+        <script src="https://code.jquery.com/jquery-3.4.1.js"
+            integrity="sha256-WpOohJOqMqqyKL9FccASB9O0KwACQJpFTUBLTYOVvVU=" crossorigin="anonymous">
+        </script>
+        <script>
+        $(document).ready(function () {
+            $("#random").click(function () {
+            
+                var settings = {
+                    url : "http://localhost:3000/cocktail",
+                    method : "GET",
+                    timeout : 0
+                };
+
+                $.ajax(settings).done(function (response) {
+                    console.log(response);
+                    // response는 지금 string 이므로 변환이 필요함
+                    response = JSON.parse(response);
+                    var drinks = response['drinks'];
+
+                    var name = drinks[0]['strDrink'];
+
+                    console.log(name);
+
+                    var ingredients = [];
+                    
+                    for(var i = 0; i<15; i++){
+                        var ingredient = drinks[0]['strIngredient'+String(i+1)];
+                        if(ingredient == null)
+                            break;
+                        ingredients[i] = ingredient;
+                        //console.log(ingredients[i]);
+                    }
+
+
+                    var measures = [];
+                    for(var i = 0; i<15; i++){
+                        var measure = drinks[0]['strMeasure'+String(i+1)];
+                        if(measure == null)
+                            break;
+                        measures[i] = measure;
+                        //console.log(measures[i]);
+                    }
+
+                    var tbl = document.getElementById('tbl0');
+                    
+                    for(var i = 0; i<ingredients.length; i++){
+
+                        tbl.innerHTML += "<tr>"
+                            + "<td>" + "<div class = 'box' id = 'name"+ i + "'>" + "</div>" + "</td>"
+                            + "<td>" + "<div class = 'box' id = 'ing"+ i + "'>" + "</div>" + "</td>"
+                            + "<td>" + "<div class = 'box' id = 'mea"+ i + "'>" + "</div>" + "</td>"
+                            + "<td>" + "<div class = 'box' id = 'img"+ i + "'>" + "</div>" + "</td>"
+                            + "</tr>";
+                    }
+                    
+                    $("#name" + 0).html(name);
+
+                    for(var i = 0; i<ingredients.length; i++){
+                        $("#ing" + i).html(ingredients[i]);
+                        $("#mea" + i).html(measures[i]);
+                    }
+
+                    var htmlStr;
+                    
+                    try {
+
+                        var imgurl = drinks[0]['strDrinkThumb'];
+                        console.log(imgurl);
+
+                        //이미지 url이 성공적으로 받아진 경우 테이블의 img란에 이미지를 출력한다.
+                        $("#img" + 0).html("");
+                        //이미지 소스는 받아왔지만 404나 403에러가 뜰 경우 준비한 사진을 출력한다.
+                        htmlStr = "<img class='imgbox' width = 600px height = 400px src=" + imgurl + ">";
+                        $("#img" + 0).html(htmlStr);
+                    }
+
+                    //try 구문 내에서 오류가 발생하면 아래 코드를 실행한다.
+                    catch {
+                        $("#img").html("");
+                        htmlStr = "이미지를 찾을 수 없습니다";
+                        console.log(htmlStr);
+                        $("#img").html(htmlStr);
+                    }
+                });
+            });
+        });
+        </script>
+    </head>
+    <body>
+        <form id= "myform" name="myform">
+            <h1>Today's Cocktail</h1>
+            <div class="box1">
+                <div id = "btn_group">
+                    <input type='button' class='btn' id='random' value='랜덤'>
+                </div>
+            </div>
+        </form>
+        <!--API로부터 받은 데이터를 출력할 테이블 생성-->
+        <table style="width:100%" id="tbl0">
+            <thead>
+                <th>Name</th>
+                <th>Ingredient</th>
+                <th>Measure</th>
+                <th>Img</th>
+            </thead>
+        </table>
+        <footer>
+            
+        </footer>
+    </body>
+</html>
